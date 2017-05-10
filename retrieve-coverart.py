@@ -3,7 +3,7 @@ from HTMLParser import HTMLParser
 from bs4 import BeautifulSoup
 import psycopg2
 import requests
-import urllib
+import urllib2
 import json
 import time
 
@@ -21,12 +21,24 @@ cur = conn.cursor()
 
 offset = 0
 fileCount = 0
-fileNameCount = 11
+fileNameCount = 0
 
-def writeFile(fileName, msg):
-  text_file = open(fileName, "a")
+def writeFile(filename, msg):
+  text_file = open(filename, "a")
   text_file.write(msg + "\n")
   text_file.close()
+
+def writeLog(fileName, msg):
+  global fileCount
+  global fileNameCount
+  if fileCount < 500:
+    writeFile(fileName + str(fileNameCount) + ".txt", msg)
+    fileCount += 1
+  else:
+    fileCount = 0
+    fileNameCount += 1
+    writeFile(fileName + str(fileNameCount) + ".txt", msg)
+
 
 def getCoverArt(json, artistName, gid):
   print "---------------------------------------------------------------------------------------"
@@ -36,16 +48,20 @@ def getCoverArt(json, artistName, gid):
     print "Offset:", offset, artistName, "has", len(releaseGroups), "releases"
     for releaseGroup in releaseGroups:
       print "  -- Scraping image for", releaseGroup['title'], "id:", releaseGroup['id']
-      dataSrc = "http://coverartarchive.org/release-group/" + releaseGroup['id']
+      dataSrc = "http://coverartarchive.org/release-group/" + releaseGroup['id'] + "/front-250"
       print dataSrc
-      image = urllib.urlopen(dataSrc, "images/" + releaseGroup['id'] + ".jpg")
-      print "sdfsdfsdfsdf", image.getcode()
-      if image.getcode() == 404:
-        print("Fuck, no image")
-      elif image.getcode() == 307:
-        print image.read()
+      try:
+        image = urllib2.urlopen(dataSrc)
+        result = image.read()
+        print "IMAGE FOUND!"
+        # print result
+      except urllib2.HTTPError, e:
+        print e.code, "No image found"
+        writeLog('image-error-', releaseGroup['id'])
+        # write a log that there's no image for releaseGroup['id']
       time.sleep(6)
   else:
+    writeLog('no-release-groups-', gid)
     print "Offset:", offset, artistName,  gid, "has no releases :("
 
 def queryArtists(offset):

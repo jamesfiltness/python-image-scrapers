@@ -51,10 +51,16 @@ def getCoverArt(json, artistName, gid):
       dataSrc = "http://coverartarchive.org/release-group/" + releaseGroup['id'] + "/front-250"
       print dataSrc
       try:
-        image = urllib2.urlopen(dataSrc)
-        result = image.read()
+        request = urllib2.Request(
+          dataSrc,
+          headers={
+            "User-Agent" :
+            "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+          }
+        )
+
+        image = urllib2.urlopen(request).read()
         print "IMAGE FOUND!"
-        # print result
       except urllib2.HTTPError, e:
         print e.code, "No image found"
         writeLog('image-error-', releaseGroup['id'])

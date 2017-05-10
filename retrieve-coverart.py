@@ -6,6 +6,7 @@ import requests
 import urllib2
 import json
 import time
+import os
 
 conn = psycopg2.connect(
   database="musicbrainz_db",
@@ -45,11 +46,12 @@ def getCoverArt(json, artistName, gid):
   global offset
   releaseGroups = json['release-groups']
   if releaseGroups and len(releaseGroups) > 0:
-    print "Offset:", offset, artistName, "has", len(releaseGroups), "releases"
+    print artistName, "has", len(releaseGroups), "releases", "(Offset:", offset, ")"
     for releaseGroup in releaseGroups:
+      print "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
       print "  -- Scraping image for", releaseGroup['title'], "id:", releaseGroup['id']
       dataSrc = "http://coverartarchive.org/release-group/" + releaseGroup['id'] + "/front-250"
-      print dataSrc
+      print "  --", dataSrc
       try:
         request = urllib2.Request(
           dataSrc,
@@ -60,15 +62,20 @@ def getCoverArt(json, artistName, gid):
         )
 
         image = urllib2.urlopen(request).read()
-        print "IMAGE FOUND!"
+        filename = releaseGroup['id'] + '.jpg'
+        filename = os.path.join('images', filename)
+        file_ = open(filename, 'w')
+        file_.write(image)
+        file_.close()
+        print "  -- IMAGE SAVED!", releaseGroup['id'] + ".jpg"
       except urllib2.HTTPError, e:
-        print e.code, "No image found"
+        print "  --", e.code, "No image found"
         writeLog('image-error-', releaseGroup['id'])
         # write a log that there's no image for releaseGroup['id']
       time.sleep(6)
   else:
     writeLog('no-release-groups-', gid)
-    print "Offset:", offset, artistName,  gid, "has no releases :("
+    print artistName,  gid, "has no releases :(", "(Offset:", offset, ")"
 
 def queryArtists(offset):
   offset = str(offset)
@@ -78,7 +85,6 @@ def queryArtists(offset):
   gid = result[1]
   url="http://localhost:5000/ws/2/release-group/?query=arid:%22" + gid + "%22%20AND%20type:%22album%22%20AND%20status:%22official%22&fmt=json"
   r=requests.get(url)
-  print json.loads(r.content)
   getCoverArt(json.loads(r.content), artistName, gid)
 
 offset = 0

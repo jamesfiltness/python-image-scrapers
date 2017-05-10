@@ -20,11 +20,12 @@ print("DB Connection established")
 
 cur = conn.cursor()
 
-offset = 0
+offset = 513
 fileCount = 0
-fileNameCount = 0
+fileNameCount = 1
 
 def writeFile(filename, msg):
+  filename = os.path.join('logs', filename)
   text_file = open(filename, "a")
   text_file.write(msg + "\n")
   text_file.close()

@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import psycopg2
 import requests
 import urllib
+import os
 
 conn = psycopg2.connect(
   database="musicbrainz_db",
@@ -17,11 +18,12 @@ print("DB Connection established")
 
 cur = conn.cursor()
 
-offset = 11517
+offset = 0
 fileCount = 0
-fileNameCount = 18
+fileNameCount = 0
 
 def writeFile(fileName, msg):
+  filename = os.path.join('images', filename)
   text_file = open(fileName, "a")
   text_file.write(msg + "\n")
   text_file.close()

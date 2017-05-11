@@ -20,9 +20,11 @@ print("DB Connection established")
 
 cur = conn.cursor()
 
-offset = 1683
-fileCount = 0
-fileNameCount = 3
+offset = 0
+imageErrorWriteCount = 0
+imageErrorFileCount = 0
+noReleaseGroupsWriteCount = 0
+noReleaseGroupsFileCount = 0
 
 def writeFile(filename, msg):
   filename = os.path.join('logs', filename)
@@ -30,16 +32,27 @@ def writeFile(filename, msg):
   text_file.write(msg + "\n")
   text_file.close()
 
-def writeLog(fileName, msg):
-  global fileCount
-  global fileNameCount
-  if fileCount < 500:
-    writeFile(fileName + str(fileNameCount) + ".txt", msg)
-    fileCount += 1
+def writeImageErrorLog(msg):
+  global imageErrorWriteCount
+  global imageErrorFileCount
+  if imageErrorWriteCount < 500:
+    writeFile("image-error-" + str(imageErrorFileCount) + ".txt", msg)
+    imageErrorWriteCount += 1
   else:
-    fileCount = 0
-    fileNameCount += 1
-    writeFile(fileName + str(fileNameCount) + ".txt", msg)
+    imageErrorWriteCount = 0
+    imageErrorfileCount += 1
+    writeFile("image-error-" + str(imageErrorFileCount) + ".txt", msg)
+
+def noReleaseGroupsLog(msg):
+  global noReleaseGroupsWriteCount
+  global noReleaseGroupsFileCount
+  if noReleaseGroupsWriteCount < 500:
+    writeFile("no-release-groups-error-" + str(noReleaseGroupsFileCount) + ".txt", msg)
+    noReleaseGroupsWriteCount += 1
+  else:
+    noReleaseGroupsWriteCount = 0
+    noReleaseGroupsFileCount += 1
+    writeFile("no-release-groups-error-" + str(noReleaseGroupsFileCount) + ".txt", msg)
 
 
 def getCoverArt(json, artistName, gid):
@@ -71,11 +84,11 @@ def getCoverArt(json, artistName, gid):
         print "  -- IMAGE SAVED!", releaseGroup['id'] + ".jpg"
       except urllib2.HTTPError, e:
         print "  --", e.code, "No image found"
-        writeLog('image-error-', releaseGroup['id'])
+        writeImageErrorLog(releaseGroup['id'])
         # write a log that there's no image for releaseGroup['id']
       time.sleep(6)
   else:
-    writeLog('no-release-groups-', gid)
+    noReleaseGroupsLog(gid)
     print artistName,  gid, "has no releases :(", "(Offset:", offset, ")"
 
 def queryArtists(offset):

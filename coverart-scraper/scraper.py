@@ -20,9 +20,9 @@ print("DB Connection established")
 
 cur = conn.cursor()
 
-offset = 513
+offset = 1683
 fileCount = 0
-fileNameCount = 1
+fileNameCount = 3
 
 def writeFile(filename, msg):
   filename = os.path.join('logs', filename)
@@ -45,8 +45,8 @@ def writeLog(fileName, msg):
 def getCoverArt(json, artistName, gid):
   print "---------------------------------------------------------------------------------------"
   global offset
-  releaseGroups = json['release-groups']
-  if releaseGroups and len(releaseGroups) > 0:
+  if json['release-groups'] and len(json['release-groups']) > 0:
+    releaseGroups = json['release-groups']
     print artistName, "has", len(releaseGroups), "releases", "(Offset:", offset, ")"
     for releaseGroup in releaseGroups:
       print "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
@@ -87,8 +87,8 @@ def queryArtists(offset):
   url="http://localhost:5000/ws/2/release-group/?query=arid:%22" + gid + "%22%20AND%20type:%22album%22%20AND%20status:%22official%22&fmt=json"
   r=requests.get(url)
   getCoverArt(json.loads(r.content), artistName, gid)
+  time.sleep(1)
 
-offset = 0
 while offset < 1500000:
   queryArtists(offset)
   offset = offset + 1

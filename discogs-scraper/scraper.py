@@ -19,25 +19,38 @@ print("DB Connection established")
 cur = conn.cursor()
 
 offset = 0
-fileCount = 0
-fileNameCount = 0
+artistMissingCount = 0
+artistMissingFileCount = 0
+imageMissingCount = 0
+imageMissingFileCount = 0
 
-def writeFile(fileName, msg):
-  filename = os.path.join('images', filename)
-  text_file = open(fileName, "a")
+def writeFile(filename, msg):
+  filename = os.path.join('logs', filename)
+  text_file = open(filename, "a")
   text_file.write(msg + "\n")
   text_file.close()
 
-def writeLog(fileName, msg):
-  global fileCount
-  global fileNameCount
-  if fileCount < 500:
-    writeFile(fileName + str(fileNameCount) + ".txt", msg)
-    fileCount += 1
+def artistMissingLog(msg):
+  global artistMissingCount
+  global artistMissingFileCount
+  if artistMissingCount <= 500:
+    writeFile("artist-missing-error-" + str(artistMissingFileCount) + ".txt", msg)
+    artistMissingCount += 1
   else:
-    fileCount = 0
-    fileNameCount += 1
-    writeFile(fileName + str(fileNameCount) + ".txt", msg)
+    artistMissingCount = 0
+    artistMissingFileCount += 1
+    writeFile("artist-missing-error-" + str(artistMissingFileCount) + ".txt", msg)
+
+def imageMissingLog(msg):
+  global imageMissingCount
+  global imageMissingFileCount
+  if imageMissingCount <= 500:
+    writeFile("image-missing-" + str(imageMissingFileCount) + ".txt", msg)
+    imageMissingCount += 1
+  else:
+    imageMissingCount = 0
+    imageMissingFileCount += 1
+    writeFile("image-missing-" + str(imageMissingFileCount) + ".txt", msg)
 
 def scrapeDiscogs(artist_name, gid, offset):
   index = 0
@@ -54,7 +67,7 @@ def scrapeDiscogs(artist_name, gid, offset):
   para = soup.findAll('p')[1].getText()
   if "We couldn't find anything in the Discogs database matching your search criteria." in para:
     print "No artist found for: " + artist_name + " " + gid
-    writeLog('artist-missing-', gid);
+    artistMissingLog(gid);
   else:
     results = soup.findAll("div", { "class" : "card_large" })
     found = False
@@ -70,7 +83,7 @@ def scrapeDiscogs(artist_name, gid, offset):
         # if the the data-src is the dummy image then don't save it
         if dataSrc == "https://s.discogs.com/images/default-artist.png":
           print "No: " + offset + "| No img for: " + artist_name + " gid: " + gid
-          writeLog('image-missing-', gid);
+          imageMissingLog(gid);
         else:
           # retrieve the image and save to disc
           urllib.urlretrieve(dataSrc, "images/" + gid + ".jpg")
@@ -78,7 +91,7 @@ def scrapeDiscogs(artist_name, gid, offset):
     # if the artist name was not found in any of the results...
     if found == False:
       print "No: " + offset + "| Artist text not found: " + artist_name + " gid: " + gid
-      writeLog('image-missing-', gid);
+      artistMissingLog(gid);
 
 def queryArtists(offset):
   offset = str(offset)

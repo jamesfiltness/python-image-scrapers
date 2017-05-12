@@ -40,7 +40,7 @@ def writeImageErrorLog(msg):
     imageErrorWriteCount += 1
   else:
     imageErrorWriteCount = 0
-    imageErrorfileCount += 1
+    imageErrorFileCount += 1
     writeFile("image-error-" + str(imageErrorFileCount) + ".txt", msg)
 
 def noReleaseGroupsLog(msg):

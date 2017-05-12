@@ -35,7 +35,7 @@ def writeFile(filename, msg):
 def writeImageErrorLog(msg):
   global imageErrorWriteCount
   global imageErrorFileCount
-  if imageErrorWriteCount < 500:
+  if imageErrorWriteCount <= 500:
     writeFile("image-error-" + str(imageErrorFileCount) + ".txt", msg)
     imageErrorWriteCount += 1
   else:
@@ -46,7 +46,7 @@ def writeImageErrorLog(msg):
 def noReleaseGroupsLog(msg):
   global noReleaseGroupsWriteCount
   global noReleaseGroupsFileCount
-  if noReleaseGroupsWriteCount < 500:
+  if noReleaseGroupsWriteCount <= 500:
     writeFile("no-release-groups-error-" + str(noReleaseGroupsFileCount) + ".txt", msg)
     noReleaseGroupsWriteCount += 1
   else:

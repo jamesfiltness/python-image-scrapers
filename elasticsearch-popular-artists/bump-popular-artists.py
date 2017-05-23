@@ -458,6 +458,7 @@ for artist in rockNRollHallOfFame:
       elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
       json = json.loads(elasticSearchRequest.content)
       views = json['_source']['views']
+
       if views == 0:
         # make a request to bump the views by 100
       else :

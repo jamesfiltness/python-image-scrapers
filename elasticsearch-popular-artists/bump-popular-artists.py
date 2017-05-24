@@ -865,25 +865,32 @@ ninetiesArtists = [
 ]
 
 test = [
-"Green day"
+"Korn"
 ]
 
 artistsBumped = 0
 for artist in test:
-  artistLowercase = artist.lower();
+  print "current artist", artist
+  artistLowercase = artist.lower()
   artistEncoded = urllib2.quote(artistLowercase)
   # actually need to call last fm to get mbid as it's much more robust
-  url="http://localhost:5000/search?query=" + artistEncoded + "&type=artist&method=indexed"
   headers={
     "User-Agent" :
     "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
   }
+  url="http://localhost:5000/search?query=" + artistEncoded + "&type=artist&method=indexed"
+
 
   r = requests.get(url, headers=headers)
   soup = BeautifulSoup(r.content, "html.parser")
   trs = soup.findAll("tr")
   td1 = trs[1].findAll('td')[0]
   topScore  = td1.getText()
+
+  lastFmUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=" + artistEncoded + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json&limit=1"
+  lastFmRequest = requests.get(lastFmUrl, headers=headers)
+  lastFmJsonResponse = json.loads(lastFmRequest.content)
+  lastFmMbid = lastFmJsonResponse['results']['artistmatches']['artist'][0]['mbid']
 
   if topScore  == "100":
     tr1 = trs[1]
@@ -893,36 +900,42 @@ for artist in test:
       print "-- Artists bumped so far", artistsBumped
       link = td1.find('a')
       artistMbid = link['href'].replace('/artist/', '')
-      elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artistMbid
-      elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
-      jsonResponse = json.loads(elasticSearchRequest.content)
-      views = jsonResponse['_source']['views']
 
-      if views == 0:
-        # make a request to bump the views by 100
-        data = { "script" : "ctx._source.views+=100" }
-        payload = json.dumps(data)
-        try:
-          requests.post(elasticSearchUrl + "/_update", headers=headers, data=payload)
-          releaseGroupsUrl = "http://localhost:5000/ws/2/release-group/?query=arid:%22" + artistMbid + "%22%20AND%20type:%22album%22%20AND%20status:%22official%22&fmt=json"
+      # Cross reference lastfm and musicbrainz results
+      if artistMbid == lastFmMbid:
+        elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artistMbid
+        elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
+        jsonResponse = json.loads(elasticSearchRequest.content)
+        views = jsonResponse['_source']['views']
 
-          releaseGroupData = requests.get(releaseGroupsUrl)
-          releaseGroupsJson = json.loads(releaseGroupData.content)
-          print releaseGroupsJson
-          releaseGroups = releaseGroupsJson['release-groups']
-          for releaseGroup in releaseGroups:
-            print "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
-            print "  -- Saving release group to log", releaseGroup['title']
-          # then call last fm and get all related artists and log those to a file (to be run against this script later)
-        except urllib2.HTTPError, e:
-          print "-- Some error in bumping view score or getting release data"
+        if views == 0:
+          # make a request to bump the views by 100
+          data = { "script" : "ctx._source.views+=100" }
+          payload = json.dumps(data)
+          try:
+            requests.post(elasticSearchUrl + "/_update", headers=headers, data=payload)
+            releaseGroupsUrl = "http://localhost:5000/ws/2/release-group/?query=arid:%22" + artistMbid + "%22%20AND%20type:%22album%22%20AND%20status:%22official%22&fmt=json"
+
+            releaseGroupData = requests.get(releaseGroupsUrl)
+            releaseGroupsJson = json.loads(releaseGroupData.content)
+            print releaseGroupsJson
+            releaseGroups = releaseGroupsJson['release-groups']
+            for releaseGroup in releaseGroups:
+              print "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
+              print "  -- Saving release group to log", releaseGroup['title']
+              # call last fm and get all related artists and log those to a file (to be run against this script later)
+          except urllib2.HTTPError, e:
+            print "-- Some error in bumping view score or getting release data"
+        else :
+          # log that artist has been already bumped
+          print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
       else :
-        # log that artist has been already bumped
-        print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
+        print "Lastfm and Musicbrainz not matching",
+        # log here
     else:
       print "-- artist name no match"
       # write a log file that artist names dont match
   else:
     print "-- First cell not top score"
     # make a log here
-  time.sleep(10)
+  time.sleep(1)

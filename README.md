@@ -1,2 +1,2 @@
-# python-image-scrapers
-Image scrapers for the Discogs and coverartarchive websites
+# python-scrapers
+various python scripts to collect assets and perform processing of data for the Tuneify website.

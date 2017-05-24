@@ -430,8 +430,12 @@ ninetiesArtists = [
 "Wilco"
 ]
 
+test = [
+"Bill Withers"
+]
+
 artistsBumped = 0
-for artist in rockNRollHallOfFame:
+for artist in test:
   artistLowercase = artist.lower();
   artistEncoded = urllib.quote(artistLowercase)
   url="http://localhost:5000/search?query=" + artistEncoded + "&type=artist&method=indexed"
@@ -456,14 +460,17 @@ for artist in rockNRollHallOfFame:
       artistMbid = link['href'].replace('/artist/', '')
       elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artistMbid
       elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
-      json = json.loads(elasticSearchRequest.content)
-      views = json['_source']['views']
+      jsonResponse = json.loads(elasticSearchRequest.content)
+      views = jsonResponse['_source']['views']
 
       if views == 0:
         # make a request to bump the views by 100
+        data = { "script" : "ctx._source.views+=100" }
+        payload = json.dumps(data)
+        requests.post(elasticSearchUrl + "/_update", headers=headers, data=payload)
       else :
         # log that artist has been already bumped
-        print json['_source']['name'], "already bumped, views:", json['_source']['views']
+        print jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
 
       # Make a request to get all artists albums and bump those by mbid if not already bumped
       # then call last fm and get all related artists and log those to a file (to be run against this script later)

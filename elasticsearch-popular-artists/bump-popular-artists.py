@@ -865,8 +865,18 @@ ninetiesArtists = [
 ]
 
 test = [
-"Korn"
+"Foo Fighters"
 ]
+
+
+def writeFile(filename, msg):
+  filename = os.path.join('logs', filename)
+  text_file = open(filename, "a")
+  text_file.write(msg + "\n")
+  text_file.close()
+
+def writeLog(filename, msg):
+  writeFile(filename + ".txt", msg)
 
 artistsBumped = 0
 for artist in test:
@@ -887,11 +897,6 @@ for artist in test:
   td1 = trs[1].findAll('td')[0]
   topScore  = td1.getText()
 
-  lastFmUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=" + artistEncoded + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json&limit=1"
-  lastFmRequest = requests.get(lastFmUrl, headers=headers)
-  lastFmJsonResponse = json.loads(lastFmRequest.content)
-  lastFmMbid = lastFmJsonResponse['results']['artistmatches']['artist'][0]['mbid']
-
   if topScore  == "100":
     tr1 = trs[1]
     td1 = tr1.findAll('td')[1]
@@ -900,6 +905,11 @@ for artist in test:
       print "-- Artists bumped so far", artistsBumped
       link = td1.find('a')
       artistMbid = link['href'].replace('/artist/', '')
+
+      lastFmUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.search&artist=" + artistEncoded + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json&limit=1"
+      lastFmRequest = requests.get(lastFmUrl, headers=headers)
+      lastFmJsonResponse = json.loads(lastFmRequest.content)
+      lastFmMbid = lastFmJsonResponse['results']['artistmatches']['artist'][0]['mbid']
 
       # Cross reference lastfm and musicbrainz results
       if artistMbid == lastFmMbid:
@@ -923,19 +933,32 @@ for artist in test:
             for releaseGroup in releaseGroups:
               print "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
               print "  -- Saving release group to log", releaseGroup['title']
-              # call last fm and get all related artists and log those to a file (to be run against this script later)
+              writeLog('release-group', releaseGroup['mbid'])
+
+            # call last fm and get all related artists and log those to a file (to be run against this script later)
+            lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=" + artistEncoded + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json&limit=1"
+            lastFmSimilarArtistsRequest = requests.get(lastFmSimilarArtistsUrl, headers=headers)
+            lastFmJsonSimilarArtistsResponse = json.loads(lastFmSimilarArtistsRequest.content)
+            print lastFmJsonSimilarArtistsResponse
           except urllib2.HTTPError, e:
             print "-- Some error in bumping view score or getting release data"
+            writeLog('error-check-artist-bump', artistMbid)
+
         else :
           # log that artist has been already bumped
+          writeLog('artist-already-bumped', artistMbid)
           print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
       else :
         print "Lastfm and Musicbrainz not matching",
         # log here
+        writeLog('ids-not-matching', artistMbid)
     else:
       print "-- artist name no match"
       # write a log file that artist names dont match
+      writeLog('artist-name-no-match', artistLowercase)
+
   else:
     print "-- First cell not top score"
     # make a log here
+    writeLog('first-cell-not-100', artistLowercase)
   time.sleep(1)

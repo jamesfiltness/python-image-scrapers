@@ -763,7 +763,6 @@ eightiesArtists = [
 ]
 
 ninetiesArtists = [
-"Nirvana",
 "2Pac",
 "Mariah Carey",
 "Pearl Jam",
@@ -776,7 +775,6 @@ ninetiesArtists = [
 "The Notorious B.I.G",
 "OutKast",
 "Janet Jackson",
-"Radiohead",
 "Green Day",
 "Fugees/Lauryn Hill",
 "Metallica",
@@ -847,7 +845,7 @@ ninetiesArtists = [
 "Megadeth",
 "Faith No More",
 "Queen",
-"Cranberries",
+"The Cranberries",
 "Busta Rhymes",
 "Warren G.",
 "The Mighty Mighty Bosstones",
@@ -864,10 +862,8 @@ ninetiesArtists = [
 "Wilco"
 ]
 
-test = [
-"Foo Fighters"
-]
-
+#Artists to bump manually
+#Nirvana
 
 def writeFile(filename, msg):
   filename = os.path.join('logs', filename)
@@ -878,8 +874,13 @@ def writeFile(filename, msg):
 def writeLog(filename, msg):
   writeFile(filename + ".txt", msg)
 
+test = [
+'Oasis'
+]
+
 artistsBumped = 0
 for artist in test:
+  print "------------------------------------------------------------"
   print "current artist", artist
   artistLowercase = artist.lower()
   artistEncoded = urllib2.quote(artistLowercase)
@@ -902,7 +903,6 @@ for artist in test:
     td1 = tr1.findAll('td')[1]
     if td1.find('bdi').getText().lower() == artistLowercase:
       artistsBumped += 1
-      print "-- Artists bumped so far", artistsBumped
       link = td1.find('a')
       artistMbid = link['href'].replace('/artist/', '')
 
@@ -910,7 +910,7 @@ for artist in test:
       lastFmRequest = requests.get(lastFmUrl, headers=headers)
       lastFmJsonResponse = json.loads(lastFmRequest.content)
       lastFmMbid = lastFmJsonResponse['results']['artistmatches']['artist'][0]['mbid']
-
+      print "L", lastFmMbid
       # Cross reference lastfm and musicbrainz results
       if artistMbid == lastFmMbid:
         elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artistMbid
@@ -918,28 +918,34 @@ for artist in test:
         jsonResponse = json.loads(elasticSearchRequest.content)
         views = jsonResponse['_source']['views']
 
-        if views == 0:
+        if views == 200:
           # make a request to bump the views by 100
           data = { "script" : "ctx._source.views+=100" }
           payload = json.dumps(data)
           try:
             requests.post(elasticSearchUrl + "/_update", headers=headers, data=payload)
+            print "-- Bumping! Artists bumped so far", artistsBumped
             releaseGroupsUrl = "http://localhost:5000/ws/2/release-group/?query=arid:%22" + artistMbid + "%22%20AND%20type:%22album%22%20AND%20status:%22official%22&fmt=json"
 
             releaseGroupData = requests.get(releaseGroupsUrl)
             releaseGroupsJson = json.loads(releaseGroupData.content)
-            print releaseGroupsJson
             releaseGroups = releaseGroupsJson['release-groups']
+            print "-- Saving release groups: ", len(releaseGroups)
             for releaseGroup in releaseGroups:
-              print "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
-              print "  -- Saving release group to log", releaseGroup['title']
-              writeLog('release-group', releaseGroup['mbid'])
+              writeLog('release-group', releaseGroup['id'])
 
             # call last fm and get all related artists and log those to a file (to be run against this script later)
-            lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=" + artistEncoded + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json&limit=1"
+            lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=" + artistEncoded + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json&limit=40"
             lastFmSimilarArtistsRequest = requests.get(lastFmSimilarArtistsUrl, headers=headers)
             lastFmJsonSimilarArtistsResponse = json.loads(lastFmSimilarArtistsRequest.content)
-            print lastFmJsonSimilarArtistsResponse
+            similarArtists = lastFmJsonSimilarArtistsResponse['similarartists']['artist']
+            print "-- Saving similar artists: ", len(similarArtists)
+            for artist in similarArtists:
+              try:
+                if artist['mbid']:
+                  writeLog('similar-artist', artist['name'] + artist['mbid'])
+              except:
+                continue
           except urllib2.HTTPError, e:
             print "-- Some error in bumping view score or getting release data"
             writeLog('error-check-artist-bump', artistMbid)
@@ -949,11 +955,12 @@ for artist in test:
           writeLog('artist-already-bumped', artistMbid)
           print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
       else :
-        print "Lastfm and Musicbrainz not matching",
+        print "Lastfm and Musicbrainz not matching lastfm =", lastFmMbid, "musicbrainz mbid =", artistMbid
         # log here
-        writeLog('ids-not-matching', artistMbid)
+        logString = "mbid: " + artistMbid +  " lastFMMbid: " +  lastFmMbid
+        writeLog('ids-not-matching', logString)
     else:
-      print "-- artist name no match"
+      print "-- Artist name no match"
       # write a log file that artist names dont match
       writeLog('artist-name-no-match', artistLowercase)
 
@@ -961,4 +968,4 @@ for artist in test:
     print "-- First cell not top score"
     # make a log here
     writeLog('first-cell-not-100', artistLowercase)
-  time.sleep(1)
+  time.sleep(2)

@@ -150,10 +150,11 @@ blues = [
 ]
 
 reggae = [
-  "Bob Marley",
-  "Peter Josh",
-  "Jimmy cliff",
-  "Toots and maytals"
+  "ed2ac1e9-d51d-4eff-a2c2-85e81abd6360", # "Bob Marley",
+  "c296e10c-110a-4103-9e77-47bfebb7fb2e", # Bob Marley and the wailers
+  "7db6aae5-6644-4513-9bfc-ca2e79d4469c", #"Peter Josh",
+  "2caa54a7-b08c-41da-b892-3a41abe778be", #"Jimmy cliff",
+  "29730ee3-e1c7-4e28-9ccd-3a0e6b0e8103" #"Toots and maytals"
 ]
 
 classical = [
@@ -170,7 +171,7 @@ jazz = [
 "Duke Ellington",
 "John Coltrane",
 "Ella Fitzgerald",
-"Charlie Parker".
+"Charlie Parker",
 "Billie Holiday",
 "Thelonious Monk"
 ]
@@ -212,21 +213,29 @@ metal = [
 
 ]
 
+headers={
+  "User-Agent" :
+  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+}
+
 
 artistsBumped = 0
-for artist in test:
+for artist in reggae:
   print "------------------------------------------------------------"
   elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
   elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
   jsonResponse = json.loads(elasticSearchRequest.content)
   views = jsonResponse['_source']['views']
 
+  # only bump artist score if they haven't been bumped before
   if views == 0:
     # make a request to bump the views by 100
     data = { "script" : "ctx._source.views+=100" }
     payload = json.dumps(data)
     try:
+      print jsonResponse['_source']['name']
       requests.post(elasticSearchUrl + "/_update", headers=headers, data=payload)
+      artistsBumped += 1
       print "-- Bumping! Artists bumped so far", artistsBumped
       releaseGroupsUrl = "http://localhost:5000/ws/2/release-group/?query=arid:%22" + artist + "%22%20AND%20type:%22album%22%20AND%20status:%22official%22&fmt=json"
 

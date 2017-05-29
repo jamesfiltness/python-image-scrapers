@@ -1,6 +1,7 @@
-# This script takes well know artists from various genres and grabs the ids of their top 100 related artists (ids)
+# This script takes well know artists from various genres and grabs the musicbrainz ids of their top 100 related artists
 # from lastm. This script will then be run on those related artists
-# The script bumps the views score which will be used to help return relevant results for the tuneify elasticsearch autocomplete
+# The script bumps the views score in the elasticsearch index which will be used to help return relevant results for the tuneify elasticsearch autocomplete
+
 from threading import Event, Thread
 from HTMLParser import HTMLParser
 from bs4 import BeautifulSoup
@@ -10,10 +11,6 @@ import urllib2
 import os
 import time
 import json
-
-
-#Artists to bump manually
-#Nirvana
 
 def writeFile(filename, msg):
   filename = os.path.join('logs', filename)
@@ -25,6 +22,7 @@ def writeLog(filename, msg):
   writeFile(filename + ".txt", msg)
 
 popRock = [
+"Nirvana",
 "Elvis Presley",
 "The Beatles",
 "The Rolling Stones",
@@ -57,6 +55,7 @@ popRock = [
 "Fleetwood Mac",
 "The xx",
 "The Cure",
+"The Smiths",
 "Tame Impala",
 "Bee gees",
 "Bruce Springsteen",
@@ -106,50 +105,50 @@ hiphop = [
 ]
 
 pop = [
-"Lady Gaga",
-"Adele",
-"Maroon 5",
-"Madonna",
-"Kylie minogue"
-"michael Jackson",
-"celine dion",
-"abba",
-"taylor swift",
-"Gorillaz",
-"Kate Perry",
-"Lana Del Ray",
-"The ChainSmokers",
-"Drake",
-"Ed Sheeran",
-"Ariana Grande",
-"Justin Timberlake",
-"Kendrick Lamar",
-"Rihanna"
-"Bruno Mars"
+  "650e7db6-b795-4eb5-a702-5ea2fc46c848", # "Lady Gaga",
+  "cc2c9c3c-b7bc-4b8b-84d8-4fbd8779e493", # "Adele",
+  "0ab49580-c84f-44d4-875f-d83760ea2cfe", # "Maroon 5",
+  "79239441-bfd5-4981-a70c-55c3f15c1287", # "Madonna",
+  "2fddb92d-24b2-46a5-bf28-3aed46f4684c", # "Kylie minogue"
+  "f27ec8db-af05-4f36-916e-3d57f91ecf5e", # "michael Jackson",
+  "847e8a0c-cc20-4213-9e16-975515c2a926", # "celine dion",
+  "d87e52c5-bb8d-4da8-b941-9f4928627dc8", # "abba",
+  "20244d07-534f-4eff-b4d4-930878889970", # "taylor swift",
+  "e21857d5-3256-4547-afb3-4b6ded592596", # "Gorillaz",
+  "122d63fc-8671-43e4-9752-34e846d62a9c", # "Kate Perry",
+  "b7539c32-53e7-4908-bda3-81449c367da6", # "Lana Del Ray",
+  "91a81925-92f9-4fc9-b897-93cf01226282", # "The ChainSmokers",
+  "9fff2f8a-21e6-47de-a2b8-7f449929d43f", # "Drake",
+  "b8a7c51f-362c-4dcb-a259-bc6e0095f0a6", # "Ed Sheeran",
+  "f4fdbb4c-e4b7-47a0-b83b-d91bbfcfa387", # "Ariana Grande",
+  "596ffa74-3d08-44ef-b113-765d43d12738", # "Justin Timberlake",
+  "381086ea-f511-4aba-bdf9-71c753dc5077", # "Kendrick Lamar",
+  "73e5e69d-3554-40d8-8516-00cb38737a1c", # "Rihanna"
+  "afb680f2-b6eb-4cd7-a70b-a63b25c763d5"  # "Bruno Mars"
 ]
 
 country = [
- "Hank Williams",
- "Patsy Cline",
- "Emmylou Harris",
- "Shania Twain",
- "Johnny Cash"
+  "906bddec-bc73-49f8-ac1e-eaee691c6cf9", # "Hank Williams",
+  "ad82dd72-0df3-4a09-8d7a-1af9c9e80522", # "Patsy Cline",
+  "35ef61ca-43db-4772-ba27-0489e9ebcb69", # "Emmylou Harris",
+  "faabb55d-3c9e-4c23-8779-732ac2ee2c0d", # "Shania Twain",
+  "d43d12a1-2dc9-4257-a2fd-0a3bb1081b86", # "Johnny Cash",
+  "2819834e-4e08-47b0-a2c4-b7672318e8f0"  # "The byrds"
 ]
 
 blues = [
-  "bb king",
-  "Muddy waters",
-  "Buddy guy",
-  "Robert Johnson",
-  "Howlin wolf",
-  "JOhn lee hooker",
-  "Lead belly",
-  "eric clapton",
-  "son house",
-  "John mayall",
-  "skip james",
-  "big bill broonzy",
-  "ray charles"
+  "dcb03ce3-67a5-4eb3-b2d1-2a12d93a38f3", # "bb king",
+  "f86f1f07-d182-45ce-ae93-ef610880ca72", # "Muddy waters",
+  "4336a134-d091-4e54-9967-c7c433db6d4e", # "Buddy guy",
+  "8a8bbba6-72f7-4900-a306-c40b94f2631b", # "Robert Johnson",
+  "ca5b38c2-f39d-45a4-ad3d-daf4448846ef", # "Howlin wolf",
+  "b0122194-c49a-46a1-ade7-84d1d76bd8e9", # "John lee hooker",
+  "ddcfbdcf-cf8d-4776-8a69-10f39376b5a2", # "Lead belly",
+  "618b6900-0618-4f1e-b835-bccb17f84294", # "eric clapton",
+  "8c87dda0-be58-4e48-a3b5-2626f26364c7", # "son house",
+  "18c1e06b-fe76-4802-b070-53a2f6b707bd", # "John mayall",
+  "f205743d-4441-471d-a3af-66f584738e29", # "skip james",
+  "05bc49f8-3108-44c8-82b9-ac3254896a69"  # "big bill broonzy",
 ]
 
 reggae = [
@@ -213,7 +212,19 @@ electronic = [
 ]
 
 metal = [
- # todo
+  "65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab", # "Metallica",
+  "8869f326-16e0-4a88-aa8a-bc6fd4db2fe0", # "Slayer",
+  "5182c1d9-c7d2-4dad-afa0-ccfeada921a8", # "Black Sabbath",
+  "541f16f5-ad7a-428e-af89-9fa1b16d3c9c", # "Pantera",
+  "7c3762a3-51f8-4cf3-8565-1ee26a90efe2", # "Iron Maiden",
+  "ac865b2e-bba8-4f5a-8756-dd40d5e39f46", # "Korn",
+  "b616d6f0-ec1f-4c69-8a79-12a97ece7372", # "Anthrax",
+  "dbb3b771-ae77-4381-b61c-758b5b7898ec", # "Death",
+  "26f07661-e115-471d-a930-206f5c89d17c", # "Motley Crue",
+  "6b335658-22c8-485d-93de-0bc29a1d0349", # "Judas Priest",
+  "a466c2a2-6517-42fb-a160-1087c3bafd9f", # "Slipknot",
+  "57961a97-3796-4bf7-9f02-a985a8979ae9", # "Motorhead",
+  "4bd95eea-b9f6-4d70-a36c-cfea77431553"  # "Alice in Chains"
 ]
 
 headers={

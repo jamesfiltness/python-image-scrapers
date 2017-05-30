@@ -83,25 +83,23 @@ folk = [
 ]
 
 hiphop = [
- "jay-z",
- "Drake",
- "Kanye west",
- "Eminem",
- "Dr dre",
- "Kendrick Lamar",
- "Lil wayne",
- "Snoop dog",
- "2pac",
- "Nas",
- "Sean coombs",
- "Notorious big",
- "wu tang",
- "Nwa",
- "50 cent",
- "Beastie boys",
- "ll cool j",
- "public enemy",
- "run dmc"
+ "f82bcf78-5b69-4622-a5ef-73800768d9ac", # "jay-z",
+ "164f0d73-1234-4e2c-8743-d77bf2191051", # "Kanye west",
+ "b95ce3ff-3d05-4e87-9e01-c97b66af13d4", # "Eminem",
+ "5f6ab597-f57a-40da-be9e-adad48708203", # "Dr dre",
+ "381086ea-f511-4aba-bdf9-71c753dc5077", # "Kendrick Lamar",
+ "ac9a487a-d9d2-4f27-bb23-0f4686488345", # "Lil wayne",
+ "f90e8b26-9e52-4669-a5c9-e28529c47894", # "Snoop dog",
+ "382f1005-e9ab-4684-afd4-0bdae4ee37f2", # "2pac",
+ "cfbc0924-0035-4d6c-8197-f024653af823", # "Nas",
+ "d5d97b2b-b83b-4976-814a-056d9076c8c3", # "Notorious big",
+ "0febdcf7-4e1f-4661-9493-b40427de2c13", # "wu tang",
+ "3a54bffa-2314-44a2-927b-60144119c780", # "Nwa",
+ "8e68819d-71be-4e7d-b41d-f1df81b01d3f", # "50 cent",
+ "9beb62b2-88db-4cea-801e-162cd344ee53", # "Beastie boys",
+ "a4dd0e77-83b8-4e92-89b7-effb0e47fd8c", # "ll cool j",
+ "bf2e15d0-4b77-469e-bfb4-f8414415baca", # "public enemy",
+ "5ecc3f72-20a6-47a0-8dc5-fb0b3dadeea0"  # "run dmc"
 ]
 
 pop = [

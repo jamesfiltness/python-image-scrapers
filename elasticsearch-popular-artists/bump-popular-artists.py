@@ -22,47 +22,47 @@ def writeLog(filename, msg):
   writeFile(filename + ".txt", msg)
 
 popRock = [
-  "5b11f4ce-a62d-471e-81fc-a69a8278c7da" # "Nirvana",
-  "01809552-4f87-45b0-afff-2c6f0730a3be" # "Elvis Presley",
-  "b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d" # "The Beatles",
-  "b071f9fa-14b0-4217-8e97-eb41da73f598" # "The Rolling Stones",
-  "82b304c0-7da4-45d3-896a-0767c7ae1141" # "The Libertines",
-  "23228f18-01d5-493e-94ce-cfcde82a8db2" # "The Jam",
-  "153c9281-268f-4cf3-8938-f5a4593e5df4" # "Soundgarden",
-  "ebfc1398-8d96-47e3-82c3-f782abcdb13d" # "The Beach Boys",
-  "678d88b2-87b0-403b-b63d-5da7465aecc3" # "Led Zeppelin",
-  "a74b1b7f-71a5-4011-9441-d0b5e4122711" # "Radiohead",
-  "17b53d9f-5c63-4a09-a593-dde4608e0db9" # "The Kinks",
-  "95e1ead9-4d31-4808-a7ac-32c3614c116b" # "The Killers",
-  "9efff43b-3b29-4082-824e-bc82f646f93d" # "The Doors",
-  "f46bd570-5768-462e-b84c-c7c993bbf47e" # "Eagles",
-  "a41ac10f-0a56-4672-9161-b83f9b223559" # "Van Morrison",
-  "5d02f264-e225-41ff-83f7-d9b1f0b1874a" # "Simon & Garfunkel",
-  "83d91898-7763-47d7-b03b-b92132375c47" #  "Pink Floyd",
-  "75167b8b-44e4-407b-9d35-effe87b223cf" # "Neil Young",
-  "06fb1c8b-566e-4cb2-985b-b467c90781d4" # "Jimi Hendrix",
-  "95c2339b-8277-49a6-9aaf-08d8eeeaa0be" # "Little Richard",
-  "b83bc61f-8451-4a5d-8b8e-7e9ed295e822" # "Elton John",
-  "ea4dfa26-f633-4da6-a52a-f49ea4897b58" # "REM",
-  "a3cb23fc-acd3-4ce0-8f36-1e5aa6a18432" # "U2",
-  "f181961b-20f7-459e-89de-920ef03c7ed0" # "The Strokes",
-  "39ab1aed-75e0-4140-bd47-540276886b60" # "Oasis",
-  "ba853904-ae25-4ebb-89d6-c44cfbd71bd2" # "Blur",
-  "8bfac288-ccc5-448d-9573-c33ea2aa5c30" # "Red hot chilli peppers",
-  "ada7a83c-e3e1-40f1-93f9-3e73dbc9298a" # "artic monkeys"
-  "0383dadf-2a4e-4d10-a46a-e9e041da8eb3" # "Queen",
-  "bd13909f-1c29-4c27-a874-d4aaf27c5b1a" # "Fleetwood Mac",
-  "c5c2ea1c-4bde-4f4d-bd0b-47b200bf99d6" # "The xx",
-  "69ee3720-a7cb-4402-b48d-a02c366f2bcf" # "The Cure",
-  "40f5d9e4-2de7-4f2d-ad41-e31a9a9fea27" # "The Smiths",
-  "63aa26c3-d59b-4da4-84ac-716b54f1ef4d" # "Tame Impala",
-  "bf0f7e29-dfe1-416c-b5c6-f9ebc19ea810" # "Bee gees",
-  "70248960-cb53-4ea4-943a-edb18f7d336f" # "Bruce Springsteen",
-  "64b94289-9474-4d43-8c93-918ccc1920d1" # "Billy Joel",
-  "401c3991-b76b-499d-8082-9f2df958ef78" # "Phil Collins",
-  "5dcdb5eb-cb72-4e6e-9e63-b7bace604965" # "Bon Jovi",
-  "5441c29d-3602-4898-b1a1-b77fa23b8e50" # "David Bowie",
-  "9fdaa16b-a6c4-4831-b87c-bc9ca8ce7eaa" # "The Who"
+  "5b11f4ce-a62d-471e-81fc-a69a8278c7da", # "Nirvana",
+  "01809552-4f87-45b0-afff-2c6f0730a3be", # "Elvis Presley",
+  "b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d", # "The Beatles",
+  "b071f9fa-14b0-4217-8e97-eb41da73f598", # "The Rolling Stones",
+  "82b304c0-7da4-45d3-896a-0767c7ae1141", # "The Libertines",
+  "23228f18-01d5-493e-94ce-cfcde82a8db2", # "The Jam",
+  "153c9281-268f-4cf3-8938-f5a4593e5df4", # "Soundgarden",
+  "ebfc1398-8d96-47e3-82c3-f782abcdb13d", # "The Beach Boys",
+  "678d88b2-87b0-403b-b63d-5da7465aecc3", # "Led Zeppelin",
+  "a74b1b7f-71a5-4011-9441-d0b5e4122711", # "Radiohead",
+  "17b53d9f-5c63-4a09-a593-dde4608e0db9", # "The Kinks",
+  "95e1ead9-4d31-4808-a7ac-32c3614c116b", # "The Killers",
+  "9efff43b-3b29-4082-824e-bc82f646f93d", # "The Doors",
+  "f46bd570-5768-462e-b84c-c7c993bbf47e", # "Eagles",
+  "a41ac10f-0a56-4672-9161-b83f9b223559", # "Van Morrison",
+  "5d02f264-e225-41ff-83f7-d9b1f0b1874a", # "Simon & Garfunkel",
+  "83d91898-7763-47d7-b03b-b92132375c47", #  "Pink Floyd",
+  "75167b8b-44e4-407b-9d35-effe87b223cf", # "Neil Young",
+  "06fb1c8b-566e-4cb2-985b-b467c90781d4", # "Jimi Hendrix",
+  "95c2339b-8277-49a6-9aaf-08d8eeeaa0be", # "Little Richard",
+  "b83bc61f-8451-4a5d-8b8e-7e9ed295e822", # "Elton John",
+  "ea4dfa26-f633-4da6-a52a-f49ea4897b58", # "REM",
+  "a3cb23fc-acd3-4ce0-8f36-1e5aa6a18432", # "U2",
+  "f181961b-20f7-459e-89de-920ef03c7ed0", # "The Strokes",
+  "39ab1aed-75e0-4140-bd47-540276886b60", # "Oasis",
+  "ba853904-ae25-4ebb-89d6-c44cfbd71bd2", # "Blur",
+  "8bfac288-ccc5-448d-9573-c33ea2aa5c30", # "Red hot chilli peppers",
+  "ada7a83c-e3e1-40f1-93f9-3e73dbc9298a", # "artic monkeys"
+  "0383dadf-2a4e-4d10-a46a-e9e041da8eb3", # "Queen",
+  "bd13909f-1c29-4c27-a874-d4aaf27c5b1a", # "Fleetwood Mac",
+  "c5c2ea1c-4bde-4f4d-bd0b-47b200bf99d6", # "The xx",
+  "69ee3720-a7cb-4402-b48d-a02c366f2bcf", # "The Cure",
+  "40f5d9e4-2de7-4f2d-ad41-e31a9a9fea27", # "The Smiths",
+  "63aa26c3-d59b-4da4-84ac-716b54f1ef4d", # "Tame Impala",
+  "bf0f7e29-dfe1-416c-b5c6-f9ebc19ea810", # "Bee gees",
+  "70248960-cb53-4ea4-943a-edb18f7d336f", # "Bruce Springsteen",
+  "64b94289-9474-4d43-8c93-918ccc1920d1", # "Billy Joel",
+  "401c3991-b76b-499d-8082-9f2df958ef78", # "Phil Collins",
+  "5dcdb5eb-cb72-4e6e-9e63-b7bace604965", # "Bon Jovi",
+  "5441c29d-3602-4898-b1a1-b77fa23b8e50", # "David Bowie",
+  "9fdaa16b-a6c4-4831-b87c-bc9ca8ce7eaa"  # "The Who"
 ]
 
 folk = [
@@ -230,7 +230,7 @@ headers={
 
 artistsBumped = 0
 
-for artist in reggae:
+for artist in popRock:
   print "------------------------------------------------------------"
   elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
   elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
@@ -265,14 +265,14 @@ for artist in reggae:
       for artist in similarArtists:
         try:
           if artist['mbid']:
-            writeLog('similar-artist', artist['name'] + artist['mbid'])
+            writeLog('similar-artist', artist['mbid'] +  " # " + artist['name'])
         except:
           continue
     except urllib2.HTTPError, e:
       print "-- Some error in bumping view score or getting release data"
-      writeLog('error-check-artist-bump', artistMbid)
+      writeLog('error-check-artist-bump', artist)
   else :
     # log that artist has been already bumped
-    writeLog('artist-already-bumped', artistMbid)
+    writeLog('artist-already-bumped', artist)
     print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
   time.sleep(2)

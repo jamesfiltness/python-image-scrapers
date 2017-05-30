@@ -265,7 +265,7 @@ for artist in popRock:
       for artist in similarArtists:
         try:
           if artist['mbid']:
-            writeLog('similar-artist', artist['mbid'] +  " # " + artist['name'])
+            writeLog('similar-artist', "'" + artist['mbid'] + "'" + " # " + artist['name'])
         except:
           continue
     except urllib2.HTTPError, e:

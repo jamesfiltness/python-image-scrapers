@@ -68,18 +68,18 @@ popRock = [
 ]
 
 folk = [
-"Pete Seeger",
-"Bob Dylan",
-"Nick Drake",
-"Leonard Cohen",
-"Billy Bragg",
-"Woody Guthrie",
-"Richard Thompson",
-"Donovan",
-"John Martyn",
-"Bert Jansch",
-"Tom Paxton",
-"Ralph McTell"
+"af18a9bc-e4ab-4068-9489-b64e8186fcf1", # "Pete Seeger",
+"72c536dc-7137-4477-a521-567eeb840fa8", # "Bob Dylan",
+"99ea432a-e3d8-42cb-9d5e-db316a6a8458", # "Nick Drake",
+"65314b12-0e08-43fa-ba33-baaa7b874c15", # "Leonard Cohen",
+"7cec4a03-0a83-4308-856a-afb8aa5db0fc", # "Billy Bragg",
+"cbd827e1-4e38-427e-a436-642683433732", # "Woody Guthrie",
+"ecfeacaf-0399-470f-8207-d1c646569fd0", # "Richard Thompson",
+"72d7d717-0837-4f2a-9641-d0f9fdd3acf7", # "Donovan",
+"e821a756-487f-4931-a02f-27cf11cec7bf", # "John Martyn",
+"d7f95537-2b48-403d-9ac2-f1fc7aad0960", # "Bert Jansch",
+"1880815f-5f43-4eba-9038-96ba0380134d", # "Tom Paxton",
+"8bf5abde-89d0-4676-98ef-7e1a4eecd03d"  # "Ralph McTell"
 ]
 
 hiphop = [

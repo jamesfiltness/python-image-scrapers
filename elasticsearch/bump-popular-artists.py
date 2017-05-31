@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import psycopg2
 import requests
 import urllib2
+import urllib
 import os
 import time
 import json
@@ -15,7 +16,8 @@ import json
 def writeFile(filename, msg):
   filename = os.path.join('logs', filename)
   text_file = open(filename, "a")
-  text_file.write(msg + "\n")
+  encoded = msg.encode('utf-8')
+  text_file.write(encoded + "\n")
   text_file.close()
 
 def writeLog(filename, msg):
@@ -209,10 +211,10 @@ electronic = [
 
 metal = [
   "65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab", # "Metallica",
-  "8869f326-16e0-4a88-aa8a-bc6fd4db2fe0", # "Slayer",
+  "bdacc37b-8633-4bf8-9dd5-4662ee651aec", # "Slayer",
   "5182c1d9-c7d2-4dad-afa0-ccfeada921a8", # "Black Sabbath",
   "541f16f5-ad7a-428e-af89-9fa1b16d3c9c", # "Pantera",
-  "7c3762a3-51f8-4cf3-8565-1ee26a90efe2", # "Iron Maiden",
+  "ca891d65-d9b0-4258-89f7-e6ba29d83767", # "Iron Maiden",
   "ac865b2e-bba8-4f5a-8756-dd40d5e39f46", # "Korn",
   "b616d6f0-ec1f-4c69-8a79-12a97ece7372", # "Anthrax",
   "dbb3b771-ae77-4381-b61c-758b5b7898ec", # "Death",
@@ -230,7 +232,7 @@ headers={
 
 artistsBumped = 0
 
-for artist in folk:
+for artist in metal:
   print "------------------------------------------------------------"
   elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
   elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
@@ -238,7 +240,7 @@ for artist in folk:
   views = jsonResponse['_source']['views']
 
   # only bump artist score if they haven't been bumped before
-  if views == 0:
+  if views > -1:
     # make a request to bump the views by 100
     data = { "script" : "ctx._source.views+=100" }
     payload = json.dumps(data)
@@ -254,7 +256,7 @@ for artist in folk:
       releaseGroups = releaseGroupsJson['release-groups']
       print "-- Saving release groups: ", len(releaseGroups)
       for releaseGroup in releaseGroups:
-        writeLog('release-group', "'" + releaseGroup['id'] + "'" + " # " + releaseGroup['name'])
+        writeLog('release-group', "'" + releaseGroup['id'] + "'" + " # " + releaseGroup['title'])
 
       # call last fm and get all related artists and log those to a file (to be run against this script later)
       lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=" + artist + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json"

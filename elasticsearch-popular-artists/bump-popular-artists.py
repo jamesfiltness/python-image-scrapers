@@ -230,7 +230,7 @@ headers={
 
 artistsBumped = 0
 
-for artist in popRock:
+for artist in folk:
   print "------------------------------------------------------------"
   elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
   elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
@@ -254,7 +254,7 @@ for artist in popRock:
       releaseGroups = releaseGroupsJson['release-groups']
       print "-- Saving release groups: ", len(releaseGroups)
       for releaseGroup in releaseGroups:
-        writeLog('release-group', releaseGroup['id'])
+        writeLog('release-group', "'" + releaseGroup['id'] + "'" + " # " + releaseGroup['name'])
 
       # call last fm and get all related artists and log those to a file (to be run against this script later)
       lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=" + artist + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json"

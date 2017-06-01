@@ -1,2 +1,2 @@
-# python-scrapers
-various python scripts to collect assets and perform processing of data for the Tuneify website.
+# Tuneify Python
+Various python scripts to collect assets and perform processing of data for the Tuneify website.

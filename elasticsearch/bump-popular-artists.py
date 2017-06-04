@@ -232,7 +232,7 @@ headers={
 
 artistsBumped = 0
 
-for artist in metal:
+for artist in popRock:
   print "------------------------------------------------------------"
   elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
   elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
@@ -240,7 +240,7 @@ for artist in metal:
   views = jsonResponse['_source']['views']
 
   # only bump artist score if they haven't been bumped before
-  if views > -1:
+  if views == 0:
     # make a request to bump the views by 100
     data = { "script" : "ctx._source.views+=100" }
     payload = json.dumps(data)
@@ -267,7 +267,7 @@ for artist in metal:
       for artist in similarArtists:
         try:
           if artist['mbid']:
-            writeLog('similar-artist', "'" + artist['mbid'] + "'" + " # " + artist['name'])
+            writeLog('similar-artist', "'" + artist['mbid'] + "'," + " # " + artist['name'])
         except:
           continue
     except urllib2.HTTPError, e:

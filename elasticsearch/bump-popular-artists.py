@@ -230,51 +230,67 @@ headers={
   "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
 }
 
+genres = [
+  'popRock',
+  'folk',
+  'hiphop',
+  'metal',
+  'electronic',
+  'soul',
+  'punk',
+  'jazz',
+  'classical',
+  'reggae',
+  'blues',
+  'country',
+  'pop'
+]
+
 artistsBumped = 0
+for genre in genres:
+  for artist in genre:
+    print "------------------------------------------------------------"
+    elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
+    elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
+    jsonResponse = json.loads(elasticSearchRequest.content)
+    views = jsonResponse['_source']['views']
 
-for artist in popRock:
-  print "------------------------------------------------------------"
-  elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
-  elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
-  jsonResponse = json.loads(elasticSearchRequest.content)
-  views = jsonResponse['_source']['views']
+    # only bump artist score if they haven't been bumped before
+    if views == 0:
+      # make a request to bump the views by 100
+      data = { "script" : "ctx._source.views+=100" }
+      payload = json.dumps(data)
+      try:
+        print jsonResponse['_source']['name']
+        requests.post(elasticSearchUrl + "/_update", headers=headers, data=payload)
+        artistsBumped += 1
+        print "-- Bumping! Artists bumped so far", artistsBumped
+        releaseGroupsUrl = "http://localhost:5000/ws/2/release-group/?query=arid:%22" + artist + "%22%20AND%20type:%22album%22%20AND%20status:%22official%22&fmt=json"
 
-  # only bump artist score if they haven't been bumped before
-  if views == 0:
-    # make a request to bump the views by 100
-    data = { "script" : "ctx._source.views+=100" }
-    payload = json.dumps(data)
-    try:
-      print jsonResponse['_source']['name']
-      requests.post(elasticSearchUrl + "/_update", headers=headers, data=payload)
-      artistsBumped += 1
-      print "-- Bumping! Artists bumped so far", artistsBumped
-      releaseGroupsUrl = "http://localhost:5000/ws/2/release-group/?query=arid:%22" + artist + "%22%20AND%20type:%22album%22%20AND%20status:%22official%22&fmt=json"
+        releaseGroupData = requests.get(releaseGroupsUrl)
+        releaseGroupsJson = json.loads(releaseGroupData.content)
+        releaseGroups = releaseGroupsJson['release-groups']
+        print "-- Saving release groups: ", len(releaseGroups)
+        for releaseGroup in releaseGroups:
+          writeLog('release-group', "'" + releaseGroup['id'] + "'" + " # " + releaseGroup['title'])
 
-      releaseGroupData = requests.get(releaseGroupsUrl)
-      releaseGroupsJson = json.loads(releaseGroupData.content)
-      releaseGroups = releaseGroupsJson['release-groups']
-      print "-- Saving release groups: ", len(releaseGroups)
-      for releaseGroup in releaseGroups:
-        writeLog('release-group', "'" + releaseGroup['id'] + "'" + " # " + releaseGroup['title'])
-
-      # call last fm and get all related artists and log those to a file (to be run against this script later)
-      lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=" + artist + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json"
-      lastFmSimilarArtistsRequest = requests.get(lastFmSimilarArtistsUrl, headers=headers)
-      lastFmJsonSimilarArtistsResponse = json.loads(lastFmSimilarArtistsRequest.content)
-      similarArtists = lastFmJsonSimilarArtistsResponse['similarartists']['artist']
-      print "-- Saving similar artists: ", len(similarArtists)
-      for artist in similarArtists:
-        try:
-          if artist['mbid']:
-            writeLog('similar-artist', "'" + artist['mbid'] + "'," + " # " + artist['name'])
-        except:
-          continue
-    except urllib2.HTTPError, e:
-      print "-- Some error in bumping view score or getting release data"
-      writeLog('error-check-artist-bump', artist)
-  else :
-    # log that artist has been already bumped
-    writeLog('artist-already-bumped', artist)
-    print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
-  time.sleep(2)
+        # call last fm and get all related artists and log those to a file (to be run against this script later)
+        lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=" + artist + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json"
+        lastFmSimilarArtistsRequest = requests.get(lastFmSimilarArtistsUrl, headers=headers)
+        lastFmJsonSimilarArtistsResponse = json.loads(lastFmSimilarArtistsRequest.content)
+        similarArtists = lastFmJsonSimilarArtistsResponse['similarartists']['artist']
+        print "-- Saving similar artists: ", len(similarArtists)
+        for artist in similarArtists:
+          try:
+            if artist['mbid']:
+              writeLog('similar-artist', "'" + artist['mbid'] + "',")
+          except:
+            continue
+      except urllib2.HTTPError, e:
+        print "-- Some error in bumping view score or getting release data"
+        writeLog('error-check-artist-bump', artist)
+    else :
+      # log that artist has been already bumped
+      writeLog('artist-already-bumped', artist)
+      print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
+    time.sleep(2)

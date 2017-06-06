@@ -247,14 +247,13 @@ genres = [
 ]
 
 artistsBumped = 0
-for genre in genres:
-  for artist in genre:
-    print "------------------------------------------------------------"
-    elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
-    elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
-    jsonResponse = json.loads(elasticSearchRequest.content)
+for artist in popRock:
+  print "------------------------------------------------------------"
+  elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
+  elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
+  jsonResponse = json.loads(elasticSearchRequest.content)
+  try:
     views = jsonResponse['_source']['views']
-
     # only bump artist score if they haven't been bumped before
     if views == 0:
       # make a request to bump the views by 100
@@ -294,3 +293,6 @@ for genre in genres:
       writeLog('artist-already-bumped', artist)
       print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
     time.sleep(2)
+  except:
+    writeLog('mbid-not-found-in-index', artist)
+    print "-- Mbid not found in elasticsearch index"

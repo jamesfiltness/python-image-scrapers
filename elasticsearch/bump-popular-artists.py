@@ -269,22 +269,25 @@ for artist in popRock:
         releaseGroupData = requests.get(releaseGroupsUrl)
         releaseGroupsJson = json.loads(releaseGroupData.content)
         releaseGroups = releaseGroupsJson['release-groups']
-        print "-- Saving release groups: ", len(releaseGroups)
-        for releaseGroup in releaseGroups:
-          writeLog('release-group', "'" + releaseGroup['id'] + "'" + " # " + releaseGroup['title'])
+        if len(releaseGroups) > 0:
+          print "-- Saving release groups: ", len(releaseGroups)
+          for releaseGroup in releaseGroups:
+            writeLog('release-group', "'" + releaseGroup['id'] + "'" + " # " + releaseGroup['title'])
 
-        # call last fm and get all related artists and log those to a file (to be run against this script later)
-        lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=" + artist + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json"
-        lastFmSimilarArtistsRequest = requests.get(lastFmSimilarArtistsUrl, headers=headers)
-        lastFmJsonSimilarArtistsResponse = json.loads(lastFmSimilarArtistsRequest.content)
-        similarArtists = lastFmJsonSimilarArtistsResponse['similarartists']['artist']
-        print "-- Saving similar artists: ", len(similarArtists)
-        for artist in similarArtists:
-          try:
-            if artist['mbid']:
-              writeLog('similar-artist', "'" + artist['mbid'] + "',")
-          except:
-            continue
+          # call last fm and get all related artists and log those to a file (to be run against this script later)
+          lastFmSimilarArtistsUrl = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=" + artist + "&api_key=57ee3318536b23ee81d6b27e36997cde&format=json"
+          lastFmSimilarArtistsRequest = requests.get(lastFmSimilarArtistsUrl, headers=headers)
+          lastFmJsonSimilarArtistsResponse = json.loads(lastFmSimilarArtistsRequest.content)
+          similarArtists = lastFmJsonSimilarArtistsResponse['similarartists']['artist']
+          print "-- Saving similar artists: ", len(similarArtists)
+          for artist in similarArtists:
+            try:
+              if artist['mbid']:
+                writeLog('similar-artist', "'" + artist['mbid'] + "',")
+            except:
+              continue
+        else:
+          writeLog("no-release-groups-found", "'" + artist['mbid'] + "'")
       except urllib2.HTTPError, e:
         print "-- Some error in bumping view score or getting release data"
         writeLog('error-check-artist-bump', artist)

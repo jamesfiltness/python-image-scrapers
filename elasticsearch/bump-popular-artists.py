@@ -15,6 +15,8 @@ import json
 
 similarArtistWriteCount = 0
 similarArtistFileCount = 0
+releaseGroupWriteCount = 0
+releaseGroupFileCount = 0
 
 def writeFile(filename, msg):
   filename = os.path.join('logs', filename)
@@ -273,9 +275,9 @@ genres = [
 
 similarArtistsEntryCount = 0;
 releaseGroupsEntryCount = 0
-artistsBumped = 141
+artistsBumped = 0
 
-for artist in test:
+for artist in popRock:
   print "------------------------------------------------------------"
   elasticSearchUrl = 'http://localhost:9200/artists/artist/' + artist
   elasticSearchRequest = requests.get(elasticSearchUrl, headers=headers)
@@ -285,7 +287,7 @@ for artist in test:
     # only bump artist score if they haven't been bumped before
     if views == 0:
       # make a request to bump the views by 100
-      data = { "script" : "ctx._source.views+=75" }
+      data = { "script" : "ctx._source.views+=100" }
       payload = json.dumps(data)
       try:
         print jsonResponse['_source']['name']
@@ -322,7 +324,7 @@ for artist in test:
       # log that artist has been already bumped
       writeLog('artist-already-bumped', artist)
       print "--", jsonResponse['_source']['name'], "already bumped, views:", jsonResponse['_source']['views']
-    time.sleep(2)
+    time.sleep(0.5)
   except:
     writeLog('mbid-not-found-in-index', artist)
     print "-- Mbid not found in elasticsearch index"

@@ -1,6 +1,4 @@
 from threading import Event, Thread
-from HTMLParser import HTMLParser
-from bs4 import BeautifulSoup
 import psycopg2
 import requests
 import urllib2
@@ -21,6 +19,7 @@ print("DB Connection established")
 cur = conn.cursor()
 
 offset = 0
+imagesSaved = 0
 imageErrorWriteCount = 0
 imageErrorFileCount = 0
 
@@ -42,13 +41,14 @@ def writeImageErrorLog(msg):
     writeFile("image-error-" + str(imageErrorFileCount) + ".txt", msg)
 
 def queryReleaseGroups(offset):
+  global imagesSaved
   offset = str(offset)
   cur.execute("SELECT name, gid FROM release_group OFFSET " + offset + " LIMIT 1");
   result =  cur.fetchone()
   artistName = result[0]
   gid = result[1]
-  print "  -- Scraping image for", releaseGroup['title'], "id:", releaseGroup['id']
-  dataSrc = "http://coverartarchive.org/release-group/" + releaseGroup['id'] + "/front-250"
+  print "  -- Scraping image for ", artistName, " ", gid, " offset", offset
+  dataSrc = "http://coverartarchive.org/release-group/" + gid + "/front-250"
   print "  --", dataSrc
   try:
     request = urllib2.Request(
@@ -60,17 +60,16 @@ def queryReleaseGroups(offset):
     )
 
     image = urllib2.urlopen(request).read()
-    filename = releaseGroup['id'] + '.jpg'
+    filename = gid + '.jpg'
     filename = os.path.join('images', filename)
     file_ = open(filename, 'w')
     file_.write(image)
     file_.close()
-    print "  -- IMAGE SAVED!", releaseGroup['id'] + ".jpg"
+    imagesSaved = imagesSaved + 1
+    print "  -- IMAGE SAVED!", gid + ".jpg", " IMAGES SAVED:", imagesSaved
+    print "---------------------------------------------------------------------------------"
   except urllib2.HTTPError, e:
     print "  --", e.code, "No image found"
-    writeImageErrorLog(releaseGroup['id'])
-  time.sleep(1)
-
-while offset < 1500000:
-  queryReleaseGroup(offset)
-  offset = offset + 1
+    print "---------------------------------------------------------------------------------"
+    writeImageErrorLog(gid)
+  time.sleep(0.5)
